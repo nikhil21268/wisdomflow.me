@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 
 
 class Config:
@@ -8,3 +9,6 @@ class Config:
     ACCESS_TOKEN_EXPIRES_MINUTES = 15
     REFRESH_TOKEN_EXPIRES_MINUTES = 60 * 24
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*")
+    JWT_SECRET_KEY = SECRET_KEY
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=ACCESS_TOKEN_EXPIRES_MINUTES)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(minutes=REFRESH_TOKEN_EXPIRES_MINUTES)
