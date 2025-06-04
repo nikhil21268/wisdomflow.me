@@ -7,6 +7,7 @@ Store and search your personal principles across web and mobile apps.
 - `make dev` – run backend and frontend in watch mode
 - `make migrate` – run database migrations
 - `make test` – run unit tests
+- `cd mobile && npm install && npm start` – run Expo mobile app
 
 ## Deployment
 

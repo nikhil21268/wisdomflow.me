@@ -4,8 +4,6 @@ from flask_jwt_extended import JWTManager
 
 from .config import Config
 from .db import db
-from .auth.routes import auth_bp
-from .principles.routes import principles_bp
 
 
 def create_app() -> Flask:
@@ -15,6 +13,9 @@ def create_app() -> Flask:
     db.init_app(app)
     JWTManager(app)
     CORS(app, origins=Config.CORS_ORIGINS)
+
+    from .auth.routes import auth_bp
+    from .principles.routes import principles_bp
 
     app.register_blueprint(auth_bp, url_prefix="/api/auth")
     app.register_blueprint(principles_bp, url_prefix="/api/principles")
