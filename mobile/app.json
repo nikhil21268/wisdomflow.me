@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "wisdomflow-mobile",
+    "slug": "wisdomflow-mobile",
+    "version": "1.0.0",
+    "sdkVersion": "48.0.0",
+    "platforms": ["android", "ios"],
+    "jsEngine": "hermes",
+    "entryPoint": "./App.tsx"
+  }
+}
