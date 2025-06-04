@@ -1,7 +1,10 @@
-from datetime import datetime, timedelta
 from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
-import jwt
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+)
 
 from ..models import db, User
 from ..config import Config
@@ -10,17 +13,8 @@ auth_bp = Blueprint('auth', __name__)
 
 
 def create_tokens(user_id):
-    payload = {
-        'sub': str(user_id),
-        'exp': datetime.utcnow() + timedelta(minutes=Config.ACCESS_TOKEN_EXPIRES_MINUTES)
-    }
-    token = jwt.encode(payload, Config.SECRET_KEY, algorithm='HS256')
-
-    refresh_payload = {
-        'sub': str(user_id),
-        'exp': datetime.utcnow() + timedelta(minutes=Config.REFRESH_TOKEN_EXPIRES_MINUTES)
-    }
-    refresh = jwt.encode(refresh_payload, Config.SECRET_KEY, algorithm='HS256')
+    token = create_access_token(identity=str(user_id))
+    refresh = create_refresh_token(identity=str(user_id))
     return token, refresh
 
 
@@ -51,9 +45,12 @@ def login():
 @auth_bp.route('/refresh', methods=['POST'])
 def refresh():
     data = request.get_json()
+    token_str = data.get('refresh_token')
+    if not token_str:
+        return jsonify({'error': 'Invalid token'}), 401
     try:
-        payload = jwt.decode(data.get('refresh_token'), Config.SECRET_KEY, algorithms=['HS256'])
-    except jwt.PyJWTError:
+        payload = decode_token(token_str)
+    except Exception:
         return jsonify({'error': 'Invalid token'}), 401
     token, refresh = create_tokens(payload['sub'])
     return jsonify({'access_token': token, 'refresh_token': refresh})

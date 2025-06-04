@@ -7,7 +7,7 @@ dev:
 migrate:
 	cd backend && alembic upgrade head
 
-TEST_BACKEND = cd backend && pytest
+TEST_BACKEND = cd backend && OFFLINE_TESTS=1 pytest
 TEST_FRONTEND = cd frontend && npm test -- --watchAll=false
 	
 test:
