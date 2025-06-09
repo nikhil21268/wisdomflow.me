@@ -1,16 +1,19 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import os
-import huggingface_hub
 
-# sentence-transformers 2.2 imports `cached_download` from
-# `huggingface_hub`, which was removed in newer versions. Provide a
-# backwards compatible alias so the import succeeds without pinning an
-# older hub version.
-if not hasattr(huggingface_hub, "cached_download"):
-    huggingface_hub.cached_download = huggingface_hub.hf_hub_download
+OFFLINE = os.getenv("OFFLINE_TESTS")
+if not OFFLINE:
+    import huggingface_hub
 
-from sentence_transformers import SentenceTransformer
+    # sentence-transformers 2.2 imports `cached_download` from
+    # `huggingface_hub`, which was removed in newer versions. Provide a
+    # backwards compatible alias so the import succeeds without pinning an
+    # older hub version.
+    if not hasattr(huggingface_hub, "cached_download"):
+        huggingface_hub.cached_download = huggingface_hub.hf_hub_download
+
+    from sentence_transformers import SentenceTransformer
 from sqlalchemy.sql import text
 from sqlalchemy import desc
 
@@ -19,7 +22,7 @@ from ..schemas import PrincipleOut
 from ..config import Config
 
 principles_bp = Blueprint('principles', __name__)
-if os.getenv("OFFLINE_TESTS"):
+if OFFLINE:
     class _DummyModel:
         def encode(self, text):
             return [0.0]
