@@ -9,6 +9,10 @@ Store and search your personal principles across web and mobile apps.
 - `make test` – run unit tests
 - `cd mobile && npm install && npm start` – run Expo mobile app
 
+Database migrations require a **PostgreSQL** database. SQLite cannot be used
+because the project relies on `UUID` and vector column types which are not
+supported by SQLite.
+
 ## Deployment
 
 Backend is deployed on Heroku via `Procfile` and frontend is served from Vercel using `vercel.json`.
@@ -26,9 +30,10 @@ To run everything offline on your machine:
    pip install -r requirements.txt
    ```
 
-2. Apply database migrations so the database schema is up to date. Set the
-   `DATABASE_URL` environment variable to your Postgres instance if you are not
-   using the default SQLite database:
+2. Create a PostgreSQL database (for example with `createdb wisdomflow`) and
+   set the connection string in the `DATABASE_URL` environment variable. SQLite
+   cannot be used because UUID and vector columns are unsupported. Run the
+   migrations to initialize the schema:
 
    ```bash
    make migrate
