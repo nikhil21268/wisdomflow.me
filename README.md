@@ -9,6 +9,8 @@ Store and search your personal principles across web and mobile apps.
 - `make test` – run unit tests
 - `cd mobile && npm install && npm start` – run Expo mobile app
 
+Backend requires **Python 3.11**. Other versions may fail to install dependencies.
+
 Database migrations require a **PostgreSQL** database. SQLite cannot be used
 because the project relies on `UUID` and vector column types which are not
 supported by SQLite.
@@ -21,11 +23,11 @@ Backend is deployed on Heroku via `Procfile` and frontend is served from Vercel 
 
 To run everything offline on your machine:
 
-1. Install backend dependencies and create a virtual environment:
+1. Install backend dependencies and create a Python 3.11 virtual environment:
 
    ```bash
    cd backend
-   python -m venv venv
+   python3.11 -m venv venv
    . venv/bin/activate
    pip install -r requirements.txt
    ```
