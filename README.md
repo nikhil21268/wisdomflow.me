@@ -11,7 +11,8 @@ Store and search your personal principles across web and mobile apps.
 
 Database migrations require a **PostgreSQL** database. SQLite cannot be used
 because the project relies on `UUID` and vector column types which are not
-supported by SQLite.
+supported by SQLite. You must also install the `pgvector` extension in your
+PostgreSQL server so that vector columns work correctly.
 
 ## Deployment
 
@@ -31,9 +32,10 @@ To run everything offline on your machine:
    ```
 
 2. Create a PostgreSQL database (for example with `createdb wisdomflow`) and
-   set the connection string in the `DATABASE_URL` environment variable. SQLite
-   cannot be used because UUID and vector columns are unsupported. Run the
-   migrations to initialize the schema:
+   enable the `pgvector` extension by running `CREATE EXTENSION IF NOT EXISTS
+   vector;`. Set the connection string in the `DATABASE_URL` environment
+   variable. SQLite cannot be used because UUID and vector columns are
+   unsupported. Run the migrations to initialize the schema:
 
    ```bash
    make migrate
