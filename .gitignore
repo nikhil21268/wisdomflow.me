@@ -4,3 +4,4 @@ __pycache__/
 frontend/node_modules/
 frontend/package-lock.json
 .env
+backend/venv/
