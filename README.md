@@ -31,9 +31,14 @@ To run everything offline on your machine:
    ```
 
 2. Create a PostgreSQL database (for example with `createdb wisdomflow`) and
-   set the connection string in the `DATABASE_URL` environment variable. SQLite
-   cannot be used because UUID and vector columns are unsupported. Run the
-   migrations to initialize the schema:
+   **export** the connection string in the `DATABASE_URL` environment variable:
+
+   ```bash
+   export DATABASE_URL=postgresql://<user>:<password>@localhost/wisdomflow
+   ```
+
+   SQLite cannot be used because UUID and vector columns are unsupported.
+   After exporting `DATABASE_URL`, run the migrations to initialize the schema:
 
    ```bash
    make migrate
