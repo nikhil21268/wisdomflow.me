@@ -4,7 +4,9 @@ from datetime import timedelta
 
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev")
-    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL", "sqlite:///db.sqlite3")
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL")
+    if not SQLALCHEMY_DATABASE_URI:
+        raise RuntimeError("DATABASE_URL must point to a PostgreSQL database")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     ACCESS_TOKEN_EXPIRES_MINUTES = 15
     REFRESH_TOKEN_EXPIRES_MINUTES = 60 * 24
