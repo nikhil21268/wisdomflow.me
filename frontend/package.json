@@ -22,6 +22,7 @@
     "jest-environment-jsdom": "^30.0.0-beta.3",
     "ts-jest": "29.1.1",
     "typescript": "5.1.6",
-    "vite": "4.4.9"
+    "vite": "4.4.9",
+    "@vitejs/plugin-react": "^4.0.0"
   }
 }
