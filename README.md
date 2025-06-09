@@ -26,7 +26,15 @@ To run everything offline on your machine:
    pip install -r requirements.txt
    ```
 
-2. Build the frontend so it can be served by Flask:
+2. Apply database migrations so the database schema is up to date. Set the
+   `DATABASE_URL` environment variable to your Postgres instance if you are not
+   using the default SQLite database:
+
+   ```bash
+   make migrate
+   ```
+
+3. Build the frontend so it can be served by Flask:
 
    ```bash
    cd ../frontend
@@ -34,7 +42,7 @@ To run everything offline on your machine:
    npm run build
    ```
 
-3. Start the backend which will also serve the compiled frontend:
+4. Start the backend which will also serve the compiled frontend:
 
    ```bash
    cd ../backend
