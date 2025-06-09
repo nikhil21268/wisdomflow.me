@@ -8,3 +8,4 @@ alembic==1.12.1
 sentence-transformers==2.2.2
 spacy==3.5.3
 pytest==7.4.0
+huggingface-hub==0.15.1
