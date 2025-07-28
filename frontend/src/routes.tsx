@@ -18,6 +18,11 @@ export default function AppRoutes() {
     }
   };
 
+  const refreshEmbeddings = async () => {
+    await authFetch('/api/principles/refresh', { method: 'POST' });
+    fetchItems();
+  };
+
   function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('refresh');
@@ -44,6 +49,7 @@ export default function AppRoutes() {
           <div>
             <nav>
               <Link to="/search">Search</Link> |{' '}
+              <button onClick={refreshEmbeddings}>Refresh</button> |{' '}
               <button onClick={logout}>Logout</button>
             </nav>
             <PrincipleForm onAdded={fetchItems} />

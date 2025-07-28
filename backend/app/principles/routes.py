@@ -36,7 +36,24 @@ else:
     model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
 
 
-# TODO: integrate spaCy preprocessing
+if OFFLINE:
+    def preprocess_text(text: str) -> str:
+        """Simplified text normalization used during offline testing."""
+        return text.lower()
+else:
+    import spacy
+
+    nlp = spacy.load("en_core_web_sm")
+
+    def preprocess_text(text: str) -> str:
+        """Normalize text by removing stop words and punctuation and lemmatizing."""
+        doc = nlp(text)
+        tokens = [
+            tok.lemma_.lower()
+            for tok in doc
+            if not tok.is_stop and not tok.is_punct
+        ]
+        return " ".join(tokens)
 
 @principles_bp.route('', methods=['POST'])
 @jwt_required()
@@ -46,7 +63,8 @@ def add_principle():
     text_val = data.get('text', '').strip()
     if not text_val:
         return jsonify({'error': 'Text required'}), 400
-    emb = model.encode(text_val).tolist()
+    processed = preprocess_text(text_val)
+    emb = model.encode(processed).tolist()
 
     p = Principle(
         user_id=user_id,
@@ -84,7 +102,8 @@ def search():
     query = request.args.get('q', '')
     if not query:
         return jsonify([])
-    emb = model.encode(query)
+    processed_query = preprocess_text(query)
+    emb = model.encode(processed_query)
     topk = int(request.args.get('topK', 10))
     threshold = float(request.args.get('threshold', SIMILARITY_THRESHOLD))
     items = Principle.query.filter_by(user_id=user_id, deleted=False).all()
@@ -103,6 +122,21 @@ def search():
             )
     results.sort(key=lambda r: r['similarity'], reverse=True)
     return jsonify(results[:topk])
+
+
+@principles_bp.route('/refresh', methods=['POST'])
+@jwt_required()
+def refresh_embeddings():
+    """Recompute embeddings for all of a user's principles."""
+    user_id = get_jwt_identity()
+    items = Principle.query.filter_by(user_id=user_id, deleted=False).all()
+    count = 0
+    for p in items:
+        processed = preprocess_text(p.text)
+        p.embedding = model.encode(processed).tolist()
+        count += 1
+    db.session.commit()
+    return jsonify({'updated': count})
 
 
 @principles_bp.route('/<uuid:pid>', methods=['DELETE'])
