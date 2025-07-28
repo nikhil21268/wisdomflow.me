@@ -44,6 +44,7 @@ def add_principle():
     if not text_val:
         return jsonify({'error': 'Text required'}), 400
     emb = model.encode(text_val).tolist()
+
     p = Principle(
         user_id=user_id,
         text=text_val,

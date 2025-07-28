@@ -7,6 +7,9 @@ interface Props {
 
 export default function PrincipleForm({ onAdded }: Props) {
   const [text, setText] = useState('');
+  const [createdAt, setCreatedAt] = useState(
+    new Date().toISOString().slice(0, 16)
+  );
   const [error, setError] = useState('');
 
   async function submit(e: React.FormEvent) {
@@ -18,10 +21,11 @@ export default function PrincipleForm({ onAdded }: Props) {
     }
     const res = await authFetch('/api/principles', {
       method: 'POST',
-      body: JSON.stringify({ text })
+      body: JSON.stringify({ text, created_at: createdAt })
     });
     if (res.ok) {
       setText('');
+      setCreatedAt(new Date().toISOString().slice(0, 16));
       onAdded();
     }
   }
@@ -29,6 +33,11 @@ export default function PrincipleForm({ onAdded }: Props) {
   return (
     <form onSubmit={submit}>
       <textarea value={text} onChange={(e) => setText(e.target.value)} />
+      <input
+        type="datetime-local"
+        value={createdAt}
+        onChange={(e) => setCreatedAt(e.target.value)}
+      />
       {error && <p>{error}</p>}
       <button type="submit">Add</button>
     </form>
