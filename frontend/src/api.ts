@@ -6,8 +6,22 @@ export async function authFetch(url: string, options: RequestInit = {}) {
   if (token) (headers as any).Authorization = `Bearer ${token}`;
   const res = await fetch(API_BASE + url, { ...options, headers });
   if (res.status === 401) {
-    // TODO refresh token flow
+    const refresh = localStorage.getItem('refresh');
+    if (refresh) {
+      const r = await fetch(API_BASE + '/api/auth/refresh', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refresh })
+      });
+      if (r.ok) {
+        const data = await r.json();
+        localStorage.setItem('token', data.access_token);
+        localStorage.setItem('refresh', data.refresh_token);
+        return authFetch(url, options);
+      }
+    }
     localStorage.removeItem('token');
+    localStorage.removeItem('refresh');
   }
   return res;
 }
