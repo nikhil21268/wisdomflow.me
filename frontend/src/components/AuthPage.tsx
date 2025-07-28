@@ -21,6 +21,7 @@ export default function AuthPage({ onAuth }: Props) {
     if (res.ok) {
       const data = await res.json();
       localStorage.setItem('token', data.access_token);
+      localStorage.setItem('refresh', data.refresh_token);
       onAuth();
     } else {
       const data = await res.json().catch(() => ({}));
