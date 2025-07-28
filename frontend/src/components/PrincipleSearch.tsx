@@ -29,7 +29,13 @@ export default function PrincipleSearch() {
       </form>
       <ul>
         {results.map((r) => (
-          <li key={r.id}>{r.text}</li>
+          <li key={r.id}>
+            <div>{r.text}</div>
+            <small>{new Date(r.created_at).toLocaleString()}</small>
+            {r.similarity !== undefined && (
+              <span> - {(r.similarity * 100).toFixed(1)}%</span>
+            )}
+          </li>
         ))}
       </ul>
     </div>

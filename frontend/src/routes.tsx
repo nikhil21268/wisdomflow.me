@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link } from 'react-router-dom';
 import PrincipleList from './components/PrincipleList';
 import PrincipleForm from './components/PrincipleForm';
 import AuthPage from './components/AuthPage';
@@ -17,6 +17,12 @@ export default function AppRoutes() {
       setItems(data);
     }
   };
+
+  function logout() {
+    localStorage.removeItem('token');
+    localStorage.removeItem('refresh');
+    setAuthed(false);
+  }
 
   useEffect(() => {
     if (authed) fetchItems();
@@ -36,12 +42,27 @@ export default function AppRoutes() {
         path="/"
         element={(
           <div>
+            <nav>
+              <Link to="/search">Search</Link> |{' '}
+              <button onClick={logout}>Logout</button>
+            </nav>
             <PrincipleForm onAdded={fetchItems} />
             <PrincipleList items={items} />
           </div>
         )}
       />
-      <Route path="/search" element={<PrincipleSearch />} />
+      <Route
+        path="/search"
+        element={(
+          <div>
+            <nav>
+              <Link to="/">Home</Link> |{' '}
+              <button onClick={logout}>Logout</button>
+            </nav>
+            <PrincipleSearch />
+          </div>
+        )}
+      />
     </Routes>
   );
 }

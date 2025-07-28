@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from datetime import datetime
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import os
 
@@ -43,10 +44,21 @@ def add_principle():
     if not text_val:
         return jsonify({'error': 'Text required'}), 400
     emb = model.encode(text_val).tolist()
-    p = Principle(user_id=user_id, text=text_val, embedding=emb)
+    created_at = None
+    if 'created_at' in data:
+        try:
+            created_at = datetime.fromisoformat(data['created_at'])
+        except Exception:
+            created_at = None
+    p = Principle(
+        user_id=user_id,
+        text=text_val,
+        embedding=emb,
+        created_at=created_at or datetime.utcnow(),
+    )
     db.session.add(p)
     db.session.commit()
-    return jsonify({'id': str(p.id), 'text': p.text})
+    return jsonify({'id': str(p.id), 'text': p.text, 'created_at': p.created_at.isoformat()})
 
 
 @principles_bp.route('', methods=['GET'])
@@ -57,7 +69,14 @@ def list_principles():
     page_size = int(request.args.get('pageSize', 10))
     q = Principle.query.filter_by(user_id=user_id, deleted=False).order_by(desc(Principle.created_at))
     items = q.paginate(page=page, per_page=page_size, error_out=False).items
-    return jsonify([{'id': str(p.id), 'text': p.text} for p in items])
+    return jsonify([
+        {
+            'id': str(p.id),
+            'text': p.text,
+            'created_at': p.created_at.isoformat(),
+        }
+        for p in items
+    ])
 
 
 @principles_bp.route('/search', methods=['GET'])
@@ -79,6 +98,8 @@ def search():
     results = [dict(r) for r in res]
     for r in results:
         r['id'] = str(r['id'])
+        if isinstance(r.get('created_at'), datetime):
+            r['created_at'] = r['created_at'].isoformat()
     return jsonify(results)
 
 
