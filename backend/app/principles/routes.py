@@ -22,6 +22,9 @@ from ..models import db, Principle
 from ..schemas import PrincipleOut
 from ..config import Config
 
+# Only return search results that exceed this similarity threshold
+SIMILARITY_THRESHOLD = 0.75
+
 principles_bp = Blueprint('principles', __name__)
 if OFFLINE:
     class _DummyModel:
@@ -83,19 +86,21 @@ def search():
         return jsonify([])
     emb = model.encode(query)
     topk = int(request.args.get('topK', 10))
+    threshold = float(request.args.get('threshold', SIMILARITY_THRESHOLD))
     items = Principle.query.filter_by(user_id=user_id, deleted=False).all()
     results = []
     for p in items:
         vec = np.array(p.embedding)
         sim = float(np.dot(vec, emb) / (np.linalg.norm(vec) * np.linalg.norm(emb)))
-        results.append(
-            {
-                'id': str(p.id),
-                'text': p.text,
-                'created_at': p.created_at.isoformat(),
-                'similarity': sim,
-            }
-        )
+        if sim >= threshold:
+            results.append(
+                {
+                    'id': str(p.id),
+                    'text': p.text,
+                    'created_at': p.created_at.isoformat(),
+                    'similarity': sim,
+                }
+            )
     results.sort(key=lambda r: r['similarity'], reverse=True)
     return jsonify(results[:topk])
 

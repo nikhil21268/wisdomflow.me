@@ -4,12 +4,14 @@ import { Principle } from './PrincipleList';
 
 export default function PrincipleSearch() {
   const [query, setQuery] = useState('');
+  // Similarity threshold for search results
+  const THRESHOLD = 0.75;
   const [results, setResults] = useState<Principle[]>([]);
 
   async function doSearch(e: React.FormEvent) {
     e.preventDefault();
     if (!query.trim()) return;
-    const params = new URLSearchParams({ q: query });
+    const params = new URLSearchParams({ q: query, threshold: String(THRESHOLD) });
     const res = await authFetch('/api/principles/search?' + params.toString());
     if (res.ok) {
       const data = await res.json();
