@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import PrincipleList from './components/PrincipleList';
 import PrincipleForm from './components/PrincipleForm';
 import AuthPage from './components/AuthPage';
+import PrincipleSearch from './components/PrincipleSearch';
 import { authFetch } from './api';
 
 export default function AppRoutes() {
@@ -40,6 +41,7 @@ export default function AppRoutes() {
           </div>
         )}
       />
+      <Route path="/search" element={<PrincipleSearch />} />
     </Routes>
   );
 }
